@@ -7,6 +7,8 @@ DEFCONFIG="${DEFCONFIG:-acer_t482l_defconfig}"
 OUT_DIR="${OUT_DIR:-${ROOT}/out/acer_t482l}"
 CROSS_COMPILE="${CROSS_COMPILE:-aarch64-linux-android-}"
 JOBS="${JOBS:-$(getconf _NPROCESSORS_ONLN 2>/dev/null || nproc)}"
+BUILD_TARGETS="${BUILD_TARGETS:-Image.gz}"
+read -r -a BUILD_TARGET_ARRAY <<< "${BUILD_TARGETS}"
 HOSTCFLAGS="${HOSTCFLAGS:--fcommon}"
 KCFLAGS="${KCFLAGS:--Wno-error=maybe-uninitialized}"
 
@@ -16,6 +18,6 @@ make -C "${ROOT}" O="${OUT_DIR}" ARCH="${ARCH}" \
 
 make -C "${ROOT}" O="${OUT_DIR}" ARCH="${ARCH}" \
     CROSS_COMPILE="${CROSS_COMPILE}" HOSTCFLAGS="${HOSTCFLAGS}" \
-    KCFLAGS="${KCFLAGS}" -j"${JOBS}" Image.gz dtbs
+    KCFLAGS="${KCFLAGS}" -j"${JOBS}" "${BUILD_TARGET_ARRAY[@]}"
 
 printf "Kernel image: %s/arch/%s/boot/Image.gz\n" "${OUT_DIR}" "${ARCH}"

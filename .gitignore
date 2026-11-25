@@ -35,3 +35,9 @@
 *.orig
 *.rej
 *~
+
+# Generated DTB image manifests
+/dtbimg.cfg
+/dtboimg.cfg
+/dtbimg.cfg.tmp
+/dtboimg.cfg.tmp

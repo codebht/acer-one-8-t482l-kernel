@@ -23,7 +23,7 @@ The script defaults to `acer_t482l_defconfig`, `ARCH=arm64`, and `out/acer_t482l
 DEFCONFIG=acer_t482l_defconfig OUT_DIR=out/test CROSS_COMPILE=/path/to/toolchain/bin/aarch64-linux-android- JOBS=8 ./build.sh
 ```
 
-The build creates `Image.gz` and device-tree outputs under the selected output directory. It does not package an Android boot image. Boot-image packaging must use the correct stock ramdisk, DTB, and header parameters for the target; see the packaging records in `PORTING.md`.
+The default build target is `Image.gz`; unrelated donor-board DTBs are not built by default because some are incomplete. Add Make targets with the space-separated `BUILD_TARGETS` variable if needed. The GitHub Actions workflow performs a compile-only check and does not publish packages or artifacts. The build script does not package an Android boot image. Boot-image packaging must use the correct stock ramdisk, DTB, and header parameters for the target; see the packaging records in `PORTING.md`.
 
 ## Porting notes
 

@@ -231,3 +231,9 @@ This chronological log covers both donor-tree attempts. Later entries supersede 
 - At 137 s and 239 s, the console records SysRq blocked-task/backtrace requests but contains no task dump or panic afterward. This does not identify why framework boot completion stalls.
 - TWRP `logcat -L -b all -d` reports `Binary log entry conversion failed`. Tombstone files exist but cannot be opened (`Required key not available`); TWRP reports `ro.crypto.state=encrypted`, `ro.crypto.type=file`. The /data file-encryption key is not loaded in recovery. No userspace crash can yet be attributed.
 - Current source change remains limited to disabling the donor CCCI modem driver and LTE coexistence bridge for build #18; no further source change or flash was made from these logs. Next obtain decoded userspace logs by decrypting /data locally in TWRP (do not share the unlock credential), then inspect the newest tombstones/dropbox records. Display crop remains separate and unresolved.
+
+## 2026-11-25: Fresh-clone build and CI correction
+
+- A fresh GitHub clone ran `build.sh` but failed while its default `dtbs` target compiled unrelated `tb8766p1_64_bsp.dtb`; that donor board includes missing `tb8766p1_64_bsp/cust.dtsi`. The Acer boot image uses the stock DTB, so the helper now defaults to `Image.gz` only and accepts optional space-separated `BUILD_TARGETS`.
+- Added ignore rules for generated root `dtbimg.cfg` and `dtboimg.cfg` manifests.
+- Replaced the inherited GitHub Actions package/deploy workflow, which targeted `WHO53/apt`, with an Acer-repository build-only workflow. It compiles `Image.gz` and does not upload packages or artifacts. Build verification on a clean clone is pending.
