@@ -242,3 +242,9 @@ This chronological log covers both donor-tree attempts. Later entries supersede 
 
 - Pulled the Acer repository into `/run/media/ikaris/Workspace/check` and ran `CROSS_COMPILE=/home/ikaris/Desktop/ikaris/kernels/aarch64-toolchain/bin/aarch64-linux-android- JOBS=10 ./build.sh`. The build completed successfully and produced `out/acer_t482l/arch/arm64/boot/Image.gz`.
 - The build generated the matching `mt6761.dtb`; it did not attempt the unrelated `tb8766p1_64_bsp.dtb` target that failed previously. No build artifacts are being added to Git.
+
+## 2026-11-25: GitHub Actions GCC diagnostic fix
+
+- Inspected Actions run 45650980360 from the downloaded log archive. The build stopped in `mm/swap_state.c` because Ubuntu GCC reports the legacy ARM64 atomic inline assembly in `arch/arm64/include/asm/cmpxchg.h` as `-Werror=array-bounds`. This is a compiler diagnostic; the local Android GCC 4.9 clean-clone build succeeded.
+- Updated the build workflow to pass `-Wno-error=array-bounds` and retain its existing `-Wno-error=maybe-uninitialized` compatibility handling. This keeps the warning visible while allowing this old kernel to build with Ubuntu’s newer cross compiler. The workflow still checks that a non-empty `Image.gz` was produced and does not publish artifacts.
+- CI rerun is pending.
