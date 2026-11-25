@@ -43,4 +43,4 @@ ifneq (,$(filter $(CONFIG_MTK_PLATFORM), "mt6757"))
 	obj-y += perfmgr/mt6757/
 endif
 
-obj-$(CONFIG_MTK_FPSGO_V3) += fpsgo_cus/ 
+# Removed stale fpsgo_cus target; its source directory is absent.

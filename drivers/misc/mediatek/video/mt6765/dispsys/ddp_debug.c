@@ -824,7 +824,7 @@ static ssize_t debug_lcd_reg_dump(struct file *file, char __user *buf,
 
 	str1 = kmalloc(128, GFP_KERNEL);
 	    if (!str1) {
-		    pr_err("%s: sh could not allocate a buffer \n");
+		    pr_err("%s: sh could not allocate a buffer \n", __func__);
 		        return -1;
 	    }
 

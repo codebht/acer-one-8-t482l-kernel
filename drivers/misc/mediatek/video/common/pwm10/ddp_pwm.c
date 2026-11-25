@@ -385,6 +385,7 @@ static void disp_pwm_set_drverIC_en(enum disp_pwm_id_t id, int enabled)
 			mt_set_gpio_out(GPIO_LCM_LED_EN, GPIO_OUT_ZERO);
 	}
 #endif*/
+#ifdef CONFIG_MTK_LCM_LEGACY_GPIO_BL_EN
 	if (id == DISP_PWM0) {
 		if(enabled) {
 			pr_debug("[LCM][GPIO]lcm_resume !\n");
@@ -394,6 +395,11 @@ static void disp_pwm_set_drverIC_en(enum disp_pwm_id_t id, int enabled)
 			lcm_power_disable_led();
 		}
 	}
+#else
+	/* Acer T482L has no lcm_gpio DT node or external LED-enable pin. */
+	(void)id;
+	(void)enabled;
+#endif
 }
 
 static void disp_pwm_set_enabled(struct cmdqRecStruct *cmdq,

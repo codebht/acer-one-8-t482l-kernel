@@ -86,7 +86,7 @@ endif
 # vendor include path
 subdir-ccflags-y += -Werror -I$(src)/vendor
 
-subdir-ccflags-y += -Werror -Wno-incompatible-pointer-types
+subdir-ccflags-y += -Werror
 
 # Update pmic built flow to avoid codec init later than codec probe
 ifneq  ($(MTK_CODEC),)

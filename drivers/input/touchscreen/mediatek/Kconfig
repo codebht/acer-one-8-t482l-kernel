@@ -82,6 +82,13 @@ config TOUCHSCREEN_MTK_GT1151
 
 source "drivers/input/touchscreen/mediatek/GT1151/Kconfig"
 
+config TOUCHSCREEN_MTK_GSLX680
+	bool "MediaTek Silead GSLX680 touchscreen"
+	depends on TOUCHSCREEN_MTK && I2C
+	default n
+	help
+	  Say Y for the Silead GSLX680 capacitive touchscreen on MediaTek TPD.
+
 config TOUCHSCREEN_MTK_NT36xxx
 	bool "NT36xxx for Mediatek package"
 	default n

@@ -7,6 +7,15 @@ config MTK_LCM
 	  Please make sure CONFIG_MTK_LCM in xxxxxx_defconfig.mk.
 	  And also make sure true on in ProjectConfig.mk
 
+config MTK_LCM_LEGACY_GPIO_BL_EN
+	bool "Use legacy LCM GPIO for backlight enable"
+	depends on MTK_LCM
+	default y
+	help
+	  Enable the board-specific external LED-enable pin hook used by the
+	  MediaTek display PWM driver. Disable this when the backlight does
+	  not use the legacy lcm_gpio pinctrl device.
+
 config CUSTOM_KERNEL_LCM
 	string "define mediatek kernel LCM driver"
 	help

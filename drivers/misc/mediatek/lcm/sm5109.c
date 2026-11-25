@@ -82,6 +82,19 @@
 	 "state_led_output1",
  };
 
+/* The LCM GPIO platform device may be absent from a recovery DTB. */
+static int lcm_gpio_select_state(unsigned int mode)
+{
+	if (mode >= PC_MAX_LCM_GPIO_MODE || IS_ERR_OR_NULL(_lcm_gpio) ||
+	    IS_ERR_OR_NULL(_lcm_gpio_mode[mode])) {
+		pr_err("[LCM][GPIO] cannot select pinctrl state %u (pinctrl not ready)\n",
+		       mode);
+		return -ENODEV;
+	}
+
+	return pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[mode]);
+}
+
 
  /* function definitions */
  static int __init _lcm_gpio_init(void);
@@ -236,17 +249,17 @@
 	if( lcd_bias_id == LCD_BIAS_ID_STATUS_FLOAT )
 	{
 		pr_debug("This is NT bias IC NT50358A\n");
-		pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[1]);    //enable enp
+		lcm_gpio_select_state(1);    //enable enp
 		mdelay(10);
-		pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[3]);    //enable enn
+		lcm_gpio_select_state(3);    //enable enn
 		mdelay(5);
 	}
 	else
 	{
 		pr_debug("This is TI bias IC TPS65132S\n");
-		pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[3]);    //enable TI tps65132s SYNC to 150mA
+		lcm_gpio_select_state(3);    //enable TI tps65132s SYNC to 150mA
 		mdelay(5);
-		pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[1]);    //enable TI tps65132s EN pin
+		lcm_gpio_select_state(1);    //enable TI tps65132s EN pin
 		mdelay(10);
 	}
 
@@ -294,17 +307,17 @@ int lcm_power_enable_fhd(void){
 	if( lcd_bias_id == LCD_BIAS_ID_STATUS_FLOAT )
 	{
 		pr_debug("This is NT bias IC NT50358A\n");
-		pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[1]);    //enable enp
+		lcm_gpio_select_state(1);    //enable enp
 		mdelay(6);
-		pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[3]);    //enable enn
+		lcm_gpio_select_state(3);    //enable enn
 		mdelay(5);
 	}
 	else
 	{
 		pr_debug("This is TI bias IC TPS65132S\n");
-		pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[3]);    //enable TI tps65132s SYNC to 150mA
+		lcm_gpio_select_state(3);    //enable TI tps65132s SYNC to 150mA
 		mdelay(5);
-		pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[1]);    //enable TI tps65132s EN pin
+		lcm_gpio_select_state(1);    //enable TI tps65132s EN pin
 		mdelay(6);
 	}
 
@@ -341,7 +354,7 @@ int lcm_power_enable_vdd3(void){
  	int ret=0;
 	pr_debug("[LCM]power enable vdd3\n");
 	mdelay(1);
-	pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[9]);    //enable vdd3.3
+	lcm_gpio_select_state(9);    //enable vdd3.3
 	return ret;
 
  }
@@ -350,16 +363,16 @@ int lcm_power_enable_vdd3(void){
 
  int lcm_power_disable(void){
  	pr_debug("[LCM]power disable\n");
-	pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[2]);    //pull down enn
+	lcm_gpio_select_state(2);    //pull down enn
 	//mdelay(1);
-	pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[0]);    //pull down enp
+	lcm_gpio_select_state(0);    //pull down enp
 	return 0;
  }
  EXPORT_SYMBOL(lcm_power_disable);
 
  int lcm_power_disable_vdd3(void){
  	pr_debug("[LCM]power disable vdd3\n");
-	pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[8]);    //pull down vdd3
+	lcm_gpio_select_state(8);    //pull down vdd3
 	return 0;
  }
  EXPORT_SYMBOL(lcm_power_disable_vdd3);
@@ -368,7 +381,7 @@ int lcm_power_enable_vdd3(void){
 	int ret=0;
 	pr_debug("[LCM]backlight enable led_en pin\n");
 	mdelay(80);
-	pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[11]);    //enable led_en pin
+	ret = lcm_gpio_select_state(11);    //enable led_en pin
 	return ret;
 
  }
@@ -376,7 +389,7 @@ int lcm_power_enable_vdd3(void){
 
  int lcm_power_disable_led(void){
 	pr_debug("[LCM]backlight disable led_en pin\n");
-	pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[10]);    //disable led_en pin
+	lcm_gpio_select_state(10);    //disable led_en pin
 	return 0;
  }
  EXPORT_SYMBOL(lcm_power_disable_led);
@@ -391,10 +404,10 @@ int lcm_power_enable_vdd3(void){
 	 if((mode==0)||(mode==1)){
 		 switch (mode){
 			 case LOW :
-				 pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[4]);
+				 lcm_gpio_select_state(4);
 				 break;
 			 case HIGH:
-				 pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[5]);
+				 lcm_gpio_select_state(5);
 				 break;
 			 default:
 				 break;
@@ -411,10 +424,10 @@ int lcm_power_enable_vdd3(void){
 	 if((mode==0)||(mode==1)){
 		 switch (mode){
 			 case LOW :
-				 pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[6]);
+				 lcm_gpio_select_state(6);
 				 break;
 			 case HIGH:
-				 pinctrl_select_state(_lcm_gpio, _lcm_gpio_mode[7]);
+				 lcm_gpio_select_state(7);
 				 break;
 			 default:
 				 break;

@@ -859,26 +859,22 @@ static ssize_t ps_store_change_mode(struct device *dev, struct device_attribute 
 {
 	struct alsps_context *cxt = NULL;
 	int err = 0;
-	uint8_t *tmp_buf = NULL;
+	uint8_t tmp_buf;
 
-	tmp_buf = vzalloc(count);
-	if (!tmp_buf)
-		return -ENOMEM;
-
-	//memcpy(tmp_buf, buf, count);
-    sscanf(buf,"%d",tmp_buf);
+	err = kstrtou8(buf, 0, &tmp_buf);
+	if (err)
+		return err;
 
 	mutex_lock(&alsps_context_obj->alsps_op_mutex);
 	cxt = alsps_context_obj;
 
 	if (cxt->ps_ctl.change_distance != NULL)
-		err = cxt->ps_ctl.change_distance(tmp_buf);
+		err = cxt->ps_ctl.change_distance(&tmp_buf);
 
 	if (err < 0)
 		pr_err("ps change_mode err %d\n", err);
 
 	mutex_unlock(&alsps_context_obj->alsps_op_mutex);
-	vfree(tmp_buf);
 
 	return count;
 }

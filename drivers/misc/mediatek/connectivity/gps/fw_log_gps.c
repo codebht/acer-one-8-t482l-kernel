@@ -31,6 +31,9 @@
 #include <asm/memblock.h>
 #include <linux/wait.h>
 #include "gps.h"
+#ifdef CONFIG_MTK_CONNSYS_DEDICATED_LOG_PATH
+#include "connsys_debug_utility.h"
+#endif
 #if 0
 #include "connsys_debug_utility.h"
 #endif

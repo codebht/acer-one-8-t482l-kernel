@@ -1125,6 +1125,10 @@ struct LCM_DRIVER *lcm_driver_list[] = {
 	&nt35695B_fhd_dsi_cmd_auo_nt50358_qhd_lcm_drv,
 #endif
 
+#if defined(ACER_T482L_ILI9881)
+	&acer_t482l_ili9881_lcm_drv,
+#endif
+
 #if defined(ILI9881C_HDP_DSI_VDO_ILITEK_RT5081)
 	&ili9881c_hdp_dsi_vdo_ilitek_rt5081_lcm_drv,
 #endif

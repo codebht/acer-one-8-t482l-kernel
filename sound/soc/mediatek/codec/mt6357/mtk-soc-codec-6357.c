@@ -5100,7 +5100,7 @@ static int Audio_ADC1_Set(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
 	pr_debug("%s()\n", __func__);
-	pr_debug("%s ucontrol->value.integer.value[0] %d, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
+	pr_debug("%s ucontrol->value.integer.value[0] %ld, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
 	mutex_lock(&Ana_Power_Mutex);
 	if (ucontrol->value.integer.value[0]) {
 		if (mAudio_Analog_Mic1_mode == AUDIO_ANALOGUL_MODE_ACC)
@@ -5121,7 +5121,7 @@ static int Audio_ADC1_Set(struct snd_kcontrol *kcontrol,
 		mCodec_data->mAudio_Ana_DevicePower
 			[AUDIO_ANALOG_DEVICE_IN_ADC1] =
 		    ucontrol->value.integer.value[0];
-		pr_debug("%s ucontrol->value.integer.value[0] %d, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
+		pr_debug("%s ucontrol->value.integer.value[0] %ld, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
 	} else {
 		mCodec_data->mAudio_Ana_DevicePower
 			[AUDIO_ANALOG_DEVICE_IN_ADC1] =
@@ -5141,7 +5141,7 @@ static int Audio_ADC1_Set(struct snd_kcontrol *kcontrol,
 			 AUDIO_ANALOGUL_MODE_DCCECMSINGLE)
 			TurnOnADcPowerDCC(AUDIO_ANALOG_DEVICE_IN_ADC1, false,
 					  2);
-		pr_debug("%s ucontrol->value.integer.value[0] %d, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
+		pr_debug("%s ucontrol->value.integer.value[0] %ld, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
 	}
 	mutex_unlock(&Ana_Power_Mutex);
 	return 0;
@@ -5162,7 +5162,7 @@ static int Audio_ADC2_Set(struct snd_kcontrol *kcontrol,
 {
 	pr_debug("%s()\n", __func__);
 	mutex_lock(&Ana_Power_Mutex);
-	pr_debug("%s ucontrol->value.integer.value[0] %d, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
+	pr_debug("%s ucontrol->value.integer.value[0] %ld, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
 	if (ucontrol->value.integer.value[0]) {
 		if (mAudio_Analog_Mic2_mode == AUDIO_ANALOGUL_MODE_ACC)
 			TurnOnADcPowerACC(AUDIO_ANALOG_DEVICE_IN_ADC2, true);
@@ -5182,7 +5182,7 @@ static int Audio_ADC2_Set(struct snd_kcontrol *kcontrol,
 		mCodec_data->mAudio_Ana_DevicePower
 			[AUDIO_ANALOG_DEVICE_IN_ADC2] =
 		    ucontrol->value.integer.value[0];
-		pr_debug("%s ucontrol->value.integer.value[0] %d, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
+		pr_debug("%s ucontrol->value.integer.value[0] %ld, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
 	} else {
 		mCodec_data->mAudio_Ana_DevicePower
 			[AUDIO_ANALOG_DEVICE_IN_ADC2] =
@@ -5202,7 +5202,7 @@ static int Audio_ADC2_Set(struct snd_kcontrol *kcontrol,
 			 AUDIO_ANALOGUL_MODE_DCCECMSINGLE)
 			TurnOnADcPowerDCC(AUDIO_ANALOG_DEVICE_IN_ADC2, false,
 					  2);
-		pr_debug("%s ucontrol->value.integer.value[0] %d, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
+		pr_debug("%s ucontrol->value.integer.value[0] %ld, GetAdcStatus = %d \n", __func__, ucontrol->value.integer.value[0], GetAdcStatus());
 	}
 	mutex_unlock(&Ana_Power_Mutex);
 	return 0;

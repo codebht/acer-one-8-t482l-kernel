@@ -706,7 +706,12 @@ static int mtktscharger_get_hw_temp(void)
 static int mtktscharger_get_temp(struct thermal_zone_device *thermal, int *t)
 {
 /*[AKITA-8] m8 Charging bringup baidabin.wt 20190517 begin*/
+#if (CONFIG_MTK_GAUGE_VERSION == 30)
+	/* The GM30 API already returns millidegrees Celsius. */
+	*t = mtktscharger_get_hw_temp();
+#else
 	*t = mtktscharger_get_hw_temp() * 1000;
+#endif
 /*[AKITA-8] m8 Charging bringup baidabin.wt 20190517 end*/
 	mtktscharger_dprintk("%s %d\n", __func__, *t);
 

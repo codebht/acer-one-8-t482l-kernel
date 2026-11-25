@@ -1,0 +1,37 @@
+# Kbuild output and generated metadata
+/out/
+/build/
+/build3/
+/.config
+/include/config/
+/include/generated/
+/arch/arm64/include/generated/
+/vmlinux
+/System.map
+/Module.symvers
+/modules.order
+/arch/arm64/boot/Image
+/arch/arm64/boot/Image.gz
+/arch/arm64/boot/Image.gz-dtb
+/arch/arm64/boot/mtk.dtb
+/arch/arm64/boot/dts/**/*.dtb
+/arch/arm64/boot/dts/**/*.dtbo
+
+# Compiled kernel objects and command metadata
+*.o
+*.ko
+*.mod
+*.mod.c
+*.cmd
+*.d
+*.a
+*.so
+*.order
+*.symvers
+
+# Packaged test images and local build logs
+*.img
+*.log
+*.orig
+*.rej
+*~

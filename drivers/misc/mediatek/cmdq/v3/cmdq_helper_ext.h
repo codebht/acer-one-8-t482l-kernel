@@ -194,10 +194,7 @@ do {if (1) mmprofile_log_ex(args); } while (0);	\
 #endif
 
 /* CMDQ FTRACE */
-#define CMDQ_TRACE_FORCE_BEGIN(fmt, args...) do { \
-    (void)(fmt);                                  \
-    (void)(args);                                 \
-} while (0)
+#define CMDQ_TRACE_FORCE_BEGIN(fmt, args...) do { } while (0)
 
 #define CMDQ_TRACE_FORCE_END() do { \
 } while (0)
