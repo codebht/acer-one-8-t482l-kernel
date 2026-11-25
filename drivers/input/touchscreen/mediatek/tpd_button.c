@@ -26,11 +26,11 @@ static ssize_t mtk_virtual_keys_show(struct kobject *kobj,
 	int i, j;
 
 	for (i = 0, j = 0; i < tpd_keycnt; i++)
-		j += snprintf(buf+j, PAGE_SIZE-j, "%s%s:%d:%d:%d:%d:%d%s", buf,
-			     __stringify(EV_KEY), tpd_keys[i],
-			     tpd_keys_dim[i][0], tpd_keys_dim[i][1],
-			     tpd_keys_dim[i][2], tpd_keys_dim[i][3],
-			     (i == tpd_keycnt - 1 ? "\n" : ":"));
+		j += scnprintf(buf + j, PAGE_SIZE - j, "%s:%d:%d:%d:%d:%d%s",
+			       __stringify(EV_KEY), tpd_keys[i],
+			       tpd_keys_dim[i][0], tpd_keys_dim[i][1],
+			       tpd_keys_dim[i][2], tpd_keys_dim[i][3],
+			       (i == tpd_keycnt - 1 ? "\n" : ":"));
 	return j;
 }
 
