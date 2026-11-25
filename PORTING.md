@@ -237,3 +237,8 @@ This chronological log covers both donor-tree attempts. Later entries supersede 
 - A fresh GitHub clone ran `build.sh` but failed while its default `dtbs` target compiled unrelated `tb8766p1_64_bsp.dtb`; that donor board includes missing `tb8766p1_64_bsp/cust.dtsi`. The Acer boot image uses the stock DTB, so the helper now defaults to `Image.gz` only and accepts optional space-separated `BUILD_TARGETS`.
 - Added ignore rules for generated root `dtbimg.cfg` and `dtboimg.cfg` manifests.
 - Replaced the inherited GitHub Actions package/deploy workflow, which targeted `WHO53/apt`, with an Acer-repository build-only workflow. It compiles `Image.gz` and does not upload packages or artifacts. Build verification on a clean clone is pending.
+
+## 2026-11-25: Fresh GitHub clone build verification
+
+- Pulled the Acer repository into `/run/media/ikaris/Workspace/check` and ran `CROSS_COMPILE=/home/ikaris/Desktop/ikaris/kernels/aarch64-toolchain/bin/aarch64-linux-android- JOBS=10 ./build.sh`. The build completed successfully and produced `out/acer_t482l/arch/arm64/boot/Image.gz`.
+- The build generated the matching `mt6761.dtb`; it did not attempt the unrelated `tb8766p1_64_bsp.dtb` target that failed previously. No build artifacts are being added to Git.
