@@ -248,3 +248,35 @@ This chronological log covers both donor-tree attempts. Later entries supersede 
 - Inspected Actions run 45650980360 from the downloaded log archive. The build stopped in `mm/swap_state.c` because Ubuntu GCC reports the legacy ARM64 atomic inline assembly in `arch/arm64/include/asm/cmpxchg.h` as `-Werror=array-bounds`. This is a compiler diagnostic; the local Android GCC 4.9 clean-clone build succeeded.
 - Updated the build workflow to pass `-Wno-error=array-bounds` and retain its existing `-Wno-error=maybe-uninitialized` compatibility handling. This keeps the warning visible while allowing this old kernel to build with Ubuntu’s newer cross compiler. The workflow still checks that a non-empty `Image.gz` was produced and does not publish artifacts.
 - CI rerun is pending.
+
+## 2026-11-26: Display crop root-cause identified and fixed; touch probe hardening
+
+### Display crop — root cause found
+
+- Traced the top/bottom display crop to `CONFIG_MTK_ROUND_CORNER_SUPPORT=y` combined with `params->round_corner_en = 1` in the Acer LCM driver. `primary_display_get_lcm_corner_en()` reads this flag and passes it to `add_round_corner_layers()`. When corner layers are enabled, the display stack reserves two OVL layers (physically layer 3 and its ext) for top/bottom corner bitmaps, restricts the layering table to 10 slots instead of 12 (`CONFIG_MTK_ROUND_CORNER_SUPPORT` changes `layer_mapping_table` and `ovl_mapping_table`), and positions those corner layers relative to the full panel height. Without a valid corner-bitmap buffer in VRAM the layers are configured with a zero/garbage MVA, visually clipping the framebuffer from the top and bottom.
+- The Acer One 8 T482L panel (ILI9881C) has no physical hardware rounded corners. Enabling this feature was incorrect.
+- **Fix:** Removed the `#ifdef CONFIG_MTK_ROUND_CORNER_SUPPORT` block from `t482l_get_params()` and explicitly set `params->round_corner_en = 0` with a comment in `drivers/misc/mediatek/lcm/acer_t482l_ili9881/acer_t482l_ili9881.c`. `CONFIG_MTK_ROUND_CORNER_SUPPORT=y` remains in the defconfig for now (donor dependency), but the LCM driver no longer requests corner layers, so the display stack will not activate them for this panel.
+
+### Touch I2C NACK — partial probe hardening
+
+- The persistent `-121 (-ENXIO)` NACK on GSL I2C writes (registers 0xE0, 0xE4, 0xBC during `reset_chip`) is confirmed to occur during `init_chip()`, before firmware is loaded. This can be caused by two independent factors: (a) insufficient post-power / post-reset settling time before the first I2C transaction, and (b) the installed firmware table not matching the stock `G863_8_DFL_PG` profile which the controller expects.
+- **Timing fix:** In `tpd_i2c_probe()`, increased the post-power-enable delay from 100 ms to 200 ms (vldo28 rail stabilisation), and the post-RST-high delay from 50 ms to 150 ms (GSL controller datasheet requires ≥100 ms after RST deassert before I2C). RST-low pre-power hold was also shortened from 100 ms to 20 ms since the rail was already off. Longer settling time should reduce or eliminate the NACK if the root cause is power ramp.
+- **Probe robustness:** Changed `init_chip` failure path from an early `return -1` to a warning log that allows IRQ registration and kernel thread creation to proceed. This keeps the driver visible in dmesg even when firmware is wrong, simplifying future diagnosis.
+- **Firmware gap (unresolved):** The `GSLX680_FW` table in `mtk_gslX680.h` is the donor default and does not match the stock `G863_8_DFL_PG` profile recovered from the original TWRP kernel (11 tables of 4,719 records each). The correct table was previously extracted to `/tmp/acer-twrp-gsl-fw-tables.h` on the NVMe workspace, which is no longer available. To complete touch initialisation, the original TWRP recovery image (`twrp-recovery-original.img`) must be accessible to re-extract the matching table. Next: re-extract from TWRP image when available and replace `GSLX680_FW` in the header.
+
+### Open issues
+- Touch: firmware table mismatch (G863_8_DFL_PG) — needs re-extraction from TWRP image.
+- Backlight: `lcd-backlight/brightness` reads 0 at boot; the DCS 0x51 write during `t482l_init()` sends the value to the panel but the MTK LED/PWM class driver tracks its own brightness independently. Requires investigation of `disp_lcm_set_backlight` call path and whether PWM clock is gated at boot.
+- Android boot stall: framework does not reach `sys.boot_completed`; blocked behind encrypted `/data` (FBE). No userspace crash visible from recovery logcat. Needs decryption or a GSI without FBE enforcement.
+
+## 2026-11-26 (later): TWRP verification of display crop fix; G863_8_DFL_PG touch firmware & DSI backlight fixes
+
+### Verification & ramoops/dmesg findings
+- Packed and flashed `build3/twrp-acer-kernel-working.img` (`4.9.190+ #1 SMP PREEMPT Thu Nov 26 17:54:22 IST 2026`). TWRP booted and the user confirmed the top/bottom display cutout/crop is **fixed**.
+- Pulled `test-logs/pstore-latest/console-ramoops` (71,966 B), `test-logs/pstore-latest/pmsg-ramoops-0` (44,676 B), `test-logs/twrp-working-dmesg.log`, and `test-logs/twrp-working-recovery.log`.
+- **Touch (`gslX680`) root-cause**: In `twrp-working-dmesg.log`, `test_i2c()` passed (confirming the controller at `0-0040` is powered via `vldo28` at 2.8 V, GPIO 177 RST is high, and `i2c-0` at 100 kHz responds) and `gsl_load_fw()` ran for ~3.34 s before `check_mem_data()` started NACKing (`-121`). The `-121` on `0xE0 = 0x88` during `clr_reg()`/`reset_chip()` is the soft-reset NACK, while the post-load NACKs occur because `mtk_gslX680.h` still carried the donor firmware/config rather than `G863_8_DFL_PG`.
+- **Backlight (`lcd-backlight`) root-cause**: `orig-dtbo.dts` sets `led_mode = <0x05>` (`MT65XX_LED_MODE_CUST_BLS_PWM`) and `pwm_config = <0x04 0 0 0 0>`. In `ddp_pwm_mux.c`, `disp_pwm_get_clkid(4)` returns `-1`, and `mtk_leds.c` (`MT65XX_LED_MODE_CUST_BLS_PWM`) only calls `disp_bls_set_backlight()`, never `mtkfb_set_backlight_level()` (which drives the panel's MIPI DSI DCS `0x51` command via `t482l_set_backlight`). As a result, writing to `/sys/class/leds/lcd-backlight/brightness` did not update the panel brightness.
+
+### Changes made
+- **Touch firmware (`drivers/input/touchscreen/mediatek/gslX680/mtk_gslX680.h`)**: Extracted the 4,818-record `GSLX680_FW[]` table (file offset `0xecfe78`) and 512-word `gsl_config_data_id[512]` array (file offset `0x18ba5c8`, `0x4b00780` = 1200x1920 config) for `G863_8_DFL_PG` from `build3/twrp-recovery-unpack/kernel` and replaced the donor tables in `mtk_gslX680.h`.
+- **Backlight (`drivers/misc/mediatek/leds/mt6765/mtk_leds.c`)**: In `mt_mt65xx_led_set_cust()` under `case MT65XX_LED_MODE_CUST_BLS_PWM:`, added `mtkfb_set_backlight_level(level);` when `cust->name` is `"lcd-backlight"` so sysfs brightness writes update DSI DCS `0x51` alongside `disp_bls_set_backlight()`.

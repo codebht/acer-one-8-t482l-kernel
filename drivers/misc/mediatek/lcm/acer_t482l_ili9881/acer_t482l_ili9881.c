@@ -315,13 +315,13 @@ static void t482l_get_params(struct LCM_PARAMS *params)
     /* Stock reports a different DCS status value; skip ESD-triggered resets. */
     params->dsi.esd_check_enable = 0;
     params->dsi.customization_esd_check_enable = 0;
-#ifdef CONFIG_MTK_ROUND_CORNER_SUPPORT
-    params->round_corner_en = 1;
-    params->full_content = 0;
-    params->corner_pattern_width = T482L_WIDTH;
-    params->corner_pattern_height = 32;
-    params->corner_pattern_height_bot = 32;
-#endif
+    /*
+     * The Acer T482L panel (ILI9881C) has no hardware rounded corners.
+     * Enabling round_corner_en causes the display stack to reserve corner
+     * bitmap layers and inset the visible framebuffer area, producing the
+     * top/bottom crop observed on-device. Keep this disabled.
+     */
+    params->round_corner_en = 0;
 }
 
 static void t482l_init_power(void)

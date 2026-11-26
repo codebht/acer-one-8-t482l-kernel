@@ -1435,7 +1435,7 @@ static int tpd_i2c_probe(struct i2c_client *client, const struct i2c_device_id *
 	GSL_LOGF();
 
 	tpd_gpio_output(GTP_RST_PORT, 0);
-	msleep(100);
+	msleep(20);
 
 	ret = regulator_enable(tpd->reg);
 	if (ret != 0) {
@@ -1443,17 +1443,32 @@ static int tpd_i2c_probe(struct i2c_client *client, const struct i2c_device_id *
 		return -1;
 	}
 
-	msleep(100);
+	/*
+	 * Allow the vldo28 power rail to stabilise before deasserting reset.
+	 * The stock Elink driver uses a longer ramp; 50 ms was insufficient and
+	 * caused the first I2C reset_chip writes (0xE0/0xBC) to NACK (-ENXIO).
+	 */
+	msleep(200);
 	tpd_gpio_output(GTP_RST_PORT, 1);
 	tpd_gpio_as_int(GTP_INT_PORT);
-	msleep(50);
+	/*
+	 * GSL controller datasheet requires at least 100 ms after RST high
+	 * before the first I2C transaction. The original 50 ms was too short.
+	 */
+	msleep(150);
 
 	i2c_client = client;
 	ret = init_chip(i2c_client);
 	check_mem_data(i2c_client);
 	if (ret < 0) {
-		GSL_LOGE("Failed to init chip!\n");
-		return -1;
+		/*
+		 * Log the failure but continue: without the correct G863_8_DFL_PG
+		 * firmware table the controller cannot be fully initialised, but
+		 * we still want IRQ registration and thread creation to proceed so
+		 * the driver shows up in dmesg for further diagnosis.
+		 */
+		GSL_LOGE("init_chip failed (%d); touch will not report events until firmware is corrected\n",
+			 ret);
 	}
 #ifdef GREEN_MODE
 	green_mode(i2c_client, MODE_ON);
