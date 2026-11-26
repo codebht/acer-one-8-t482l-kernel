@@ -295,3 +295,4 @@ This chronological log covers both donor-tree attempts. Later entries supersede 
 - Flashed `twrp-acer-kernel-working.img` (`4.9.190+ #4`) and pulled `test-logs/twrp-working4-dmesg.log`. `power_check()` (`0xb0`) passed during `init_chip()`, confirming the `G863_8_DFL_PG` firmware booted cleanly.
 - However, `/proc/gsl_config` showed `0xb0 = 0x00000000` (with `0xb4` ticking) and `mtk-tpd` IRQ 19 stayed at 0. `GREEN_MODE` (`green_mode(MODE_ON)` + `reset_chip()` + `startup_chip()` at the end of `tpd_i2c_probe()`) is not present in `orig-kernel` and was wiping `0xb0` after `init_chip()`.
 - **Fix:** Disabled `#define GREEN_MODE` in `drivers/input/touchscreen/mediatek/gslX680/mtk_gslX680.c`.
+- **Result (Build #5):** Flashed `twrp-acer-kernel-working.img` (`4.9.190+ #5`); **touch is confirmed fixed and working in TWRP**. Remaining open issue: backlight brightness control.
