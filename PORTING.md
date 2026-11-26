@@ -296,3 +296,8 @@ This chronological log covers both donor-tree attempts. Later entries supersede 
 - However, `/proc/gsl_config` showed `0xb0 = 0x00000000` (with `0xb4` ticking) and `mtk-tpd` IRQ 19 stayed at 0. `GREEN_MODE` (`green_mode(MODE_ON)` + `reset_chip()` + `startup_chip()` at the end of `tpd_i2c_probe()`) is not present in `orig-kernel` and was wiping `0xb0` after `init_chip()`.
 - **Fix:** Disabled `#define GREEN_MODE` in `drivers/input/touchscreen/mediatek/gslX680/mtk_gslX680.c`.
 - **Result (Build #5):** Flashed `twrp-acer-kernel-working.img` (`4.9.190+ #5`); **touch is confirmed fixed and working in TWRP**. Remaining open issue: backlight brightness control.
+
+### Backlight root-cause found & fixed
+- Confirmed via `/sys/kernel/debug/dispsys` (`echo pwm0:1023`) that `DISP_PWM0` (GPIO 43) drives the physical backlight to full brightness, while any write to `/sys/class/leds/lcd-backlight/brightness` immediately dropped it back to dim (`din = 0`).
+- **Root-cause**: `mt_mt65xx_led_set()` in `drivers/misc/mediatek/leds/mt6765/mtk_leds.c` maps `0..255` to `0..1023` using `WINGTECH_MDSS_BRIGHT_TO_BL(..., lcm_backlight_cust[0])`, populated by `disp_lcm_get_params()` from `plcm->params->backlight_cust[0]`. Because `t482l_get_params()` in `acer_t482l_ili9881.c` left `backlight_cust` zeroed (`max_bl_lvl = 0`), every non-zero brightness write evaluated to `bl_lvl = 4` (`4/1023`, ~0.4% duty cycle).
+- **Fix:** Populated `params->backlight_cust_count = 1` (`0..255` -> `0..1023`) in `t482l_get_params()` (`acer_t482l_ili9881.c`), and scaled `mtkfb_set_backlight_level(level >> 2)` in `mtk_leds.c` to match 10-bit `bl_lvl`.

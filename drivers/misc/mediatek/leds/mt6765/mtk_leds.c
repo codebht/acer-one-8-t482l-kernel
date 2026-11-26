@@ -900,7 +900,7 @@ int mt_mt65xx_led_set_cust(struct cust_mt65xx_led *cust, int level)
 	case MT65XX_LED_MODE_CUST_BLS_PWM:
 		if (strcmp(cust->name, "lcd-backlight") == 0) {
 			bl_brightness_hal = level;
-			mtkfb_set_backlight_level(level);
+			mtkfb_set_backlight_level(level >> 2);
 		}
 #ifdef MET_USER_EVENT_SUPPORT
 		if (enable_met_backlight_tag())

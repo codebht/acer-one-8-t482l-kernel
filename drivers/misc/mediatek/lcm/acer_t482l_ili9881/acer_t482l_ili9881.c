@@ -323,6 +323,12 @@ static void t482l_get_params(struct LCM_PARAMS *params)
      * top/bottom crop observed on-device. Keep this disabled.
      */
     params->round_corner_en = 0;
+
+    params->backlight_cust_count = 1;
+    params->backlight_cust[0].min_brightness = 0;
+    params->backlight_cust[0].max_brightness = 255;
+    params->backlight_cust[0].min_bl_lvl = 0;
+    params->backlight_cust[0].max_bl_lvl = 1023;
 }
 
 static void t482l_init_power(void)
