@@ -290,3 +290,8 @@ This chronological log covers both donor-tree attempts. Later entries supersede 
 - Flashed `twrp-acer-kernel-working.img` (`4.9.190+ #3`) and pulled `test-logs/twrp-working3-dmesg.log`. `power_check()` reported `0xb0 = 49 45 cb a7`.
 - **Root-cause**: Checked `.rela.dyn` relocations in `build3/twrp-recovery-unpack/kernel` for `G863_8_DFL_PG` (`0xea0b08`): the actual pointers are `+0x48 -> 0x18badc8` (`gsl_config_data_id`, `0x3200500` = 800x1280) and `+0x50 -> 0xecfa58` (`GSLX680_FW`, 4,818 records). Our previous extraction was off by one table (`0xecfe78` / `0x18ba5c8`). Replaced `mtk_gslX680.h` with the exact relocated tables.
 - **Backlight**: Enabled `WRCTRLD` (`0x53 = 0x24`, BCTRL=1, BL=1) on Page 0 in `acer_init_sequence` (`acer_t482l_ili9881.c`) so the panel honours DSI DCS `0x51` brightness writes.
+
+### Build #4 test & GREEN_MODE removal
+- Flashed `twrp-acer-kernel-working.img` (`4.9.190+ #4`) and pulled `test-logs/twrp-working4-dmesg.log`. `power_check()` (`0xb0`) passed during `init_chip()`, confirming the `G863_8_DFL_PG` firmware booted cleanly.
+- However, `/proc/gsl_config` showed `0xb0 = 0x00000000` (with `0xb4` ticking) and `mtk-tpd` IRQ 19 stayed at 0. `GREEN_MODE` (`green_mode(MODE_ON)` + `reset_chip()` + `startup_chip()` at the end of `tpd_i2c_probe()`) is not present in `orig-kernel` and was wiping `0xb0` after `init_chip()`.
+- **Fix:** Disabled `#define GREEN_MODE` in `drivers/input/touchscreen/mediatek/gslX680/mtk_gslX680.c`.

@@ -51,7 +51,7 @@
 #define DMA_TRANS_LEN	0x20
 #define SMBUS_TRANS_LEN	0x01
 #define GSL_PAGE_REG		0xf0
-#define GREEN_MODE  /*IF use this, pls close esd check*/
+/* #define GREEN_MODE */  /*IF use this, pls close esd check*/
 #ifdef GREEN_MODE
 #define MODE_ON 1
 #define MODE_OFF 0
@@ -118,7 +118,9 @@ static char i2c_lock_flag;
 
 static DECLARE_WAIT_QUEUE_HEAD(waiter);
 static int init_chip(struct i2c_client *client);
+#ifdef GREEN_MODE
 static void green_mode(struct i2c_client *client, int mode);
+#endif
 
 
 #define GSLTP_REG_ADDR_LEN	1
