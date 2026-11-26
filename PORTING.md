@@ -285,3 +285,8 @@ This chronological log covers both donor-tree attempts. Later entries supersede 
 - Flashed `twrp-acer-kernel-working.img` (`4.9.190+ #2`) and pulled `test-logs/twrp-working2-dmesg.log`, `test-logs/twrp-working2-recovery.log`, and `test-logs/pstore-working2/`.
 - **Touch (`gslX680`)**: With `G863_8_DFL_PG` installed, `0xF0`, `0x08`, `0xE4`, and `0xBC` stopped NACKing (only `0xE0 = 0x88` soft-reset NACKs with `-121`), but `power_check()` (`0xb0`) failed in `check_mem_data()` and re-ran `init_chip()`, leaving `/proc/interrupts` (`mtk-tpd`) at 0. Added `msleep(50)` in `startup_chip()` so the MCU has time to populate `0xb0 = 0x5a5a5a5a`, plus `GSL_LOGE` on `0xb0` mismatch.
 - **DISP_PWM (`drivers/misc/mediatek/video/mt6765/dispsys/ddp_pwm_mux.c`)**: Mapped `clk_req = 4` (used by `orig-dtbo.dts` `pwm_config = <0x04 0 0 0 0>`) to `CLK26M` in `disp_pwm_get_clkid()` instead of returning `-1`.
+
+### Build #3 test & exact G863_8_DFL_PG / WRCTRLD fixes
+- Flashed `twrp-acer-kernel-working.img` (`4.9.190+ #3`) and pulled `test-logs/twrp-working3-dmesg.log`. `power_check()` reported `0xb0 = 49 45 cb a7`.
+- **Root-cause**: Checked `.rela.dyn` relocations in `build3/twrp-recovery-unpack/kernel` for `G863_8_DFL_PG` (`0xea0b08`): the actual pointers are `+0x48 -> 0x18badc8` (`gsl_config_data_id`, `0x3200500` = 800x1280) and `+0x50 -> 0xecfa58` (`GSLX680_FW`, 4,818 records). Our previous extraction was off by one table (`0xecfe78` / `0x18ba5c8`). Replaced `mtk_gslX680.h` with the exact relocated tables.
+- **Backlight**: Enabled `WRCTRLD` (`0x53 = 0x24`, BCTRL=1, BL=1) on Page 0 in `acer_init_sequence` (`acer_t482l_ili9881.c`) so the panel honours DSI DCS `0x51` brightness writes.
