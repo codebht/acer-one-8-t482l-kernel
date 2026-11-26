@@ -91,6 +91,26 @@ static void imgsensor_oc_handler3(void)
 
 }
 
+static void get_regulator_supply_name(
+	struct device_node *np,
+	enum IMGSENSOR_SENSOR_IDX idx,
+	const char *type,
+	char *buf,
+	size_t len)
+{
+	static const char * const legacy_suffix[] = {
+		"", "_sub", "_main2", "_sub2", "_main3"
+	};
+	char prop[LENGTH_FOR_SNPRINTF + 8];
+
+	snprintf(buf, len, "cam%d_%s", idx, type);
+	snprintf(prop, sizeof(prop), "%s-supply", buf);
+	if (np && !of_find_property(np, prop, NULL) &&
+	    idx < ARRAY_SIZE(legacy_suffix)) {
+		snprintf(buf, len, "%s%s", type, legacy_suffix[idx]);
+	}
+}
+
 #define OC_MODULE "camera"
 enum IMGSENSOR_RETURN imgsensor_oc_interrupt(
 	enum IMGSENSOR_SENSOR_IDX sensor_idx, bool enable)
@@ -104,11 +124,11 @@ enum IMGSENSOR_RETURN imgsensor_oc_interrupt(
 	if (enable) {
 		mdelay(5);
 		for (i = 0; i < REGULATOR_TYPE_MAX_NUM; i++) {
-			snprintf(str_regulator_name,
-					sizeof(str_regulator_name),
-					"cam%d_%s",
+			get_regulator_supply_name(pdevice->of_node,
 					sensor_idx,
-					regulator_control[i].pregulator_type);
+					regulator_control[i].pregulator_type,
+					str_regulator_name,
+					sizeof(str_regulator_name));
 			preg = regulator_get(pdevice, str_regulator_name);
 			if (preg && regulator_is_enabled(preg)) {
 				pmic_enable_interrupt(
@@ -130,11 +150,11 @@ enum IMGSENSOR_RETURN imgsensor_oc_interrupt(
 		/* Disable interrupt before power off */
 
 		for (i = 0; i < REGULATOR_TYPE_MAX_NUM; i++) {
-			snprintf(str_regulator_name,
-					sizeof(str_regulator_name),
-					"cam%d_%s",
+			get_regulator_supply_name(pdevice->of_node,
 					sensor_idx,
-					regulator_control[i].pregulator_type);
+					regulator_control[i].pregulator_type,
+					str_regulator_name,
+					sizeof(str_regulator_name));
 			preg = regulator_get(pdevice, str_regulator_name);
 			if (preg) {
 				pmic_enable_interrupt(
@@ -190,11 +210,11 @@ static enum IMGSENSOR_RETURN regulator_init(void *pinstance)
 		j < IMGSENSOR_SENSOR_IDX_MAX_NUM;
 		j++) {
 		for (i = 0; i < REGULATOR_TYPE_MAX_NUM; i++) {
-			snprintf(str_regulator_name,
-					sizeof(str_regulator_name),
-					"cam%d_%s",
+			get_regulator_supply_name(pdevice->of_node,
 					j,
-					regulator_control[i].pregulator_type);
+					regulator_control[i].pregulator_type,
+					str_regulator_name,
+					sizeof(str_regulator_name));
 			preg->pregulator[j][i] =
 			    regulator_get(pdevice, str_regulator_name);
 
