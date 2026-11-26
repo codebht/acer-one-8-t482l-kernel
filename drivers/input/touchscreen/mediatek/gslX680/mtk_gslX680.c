@@ -562,6 +562,7 @@ static void startup_chip(struct i2c_client *client)
 #endif
 
 	usleep_range(10000, 11000);
+	msleep(50);
 }
 
 #ifdef GSL9XX_CHIP
@@ -793,8 +794,11 @@ static int power_check(struct i2c_client *client)
 
 	gsl_i2c_read_bytes(client, 0xb0, read_buf, sizeof(read_buf));
 	if (read_buf[3] != 0x5a || read_buf[2] != 0x5a
-			|| read_buf[1] != 0x5a || read_buf[0] != 0x5a)
+			|| read_buf[1] != 0x5a || read_buf[0] != 0x5a) {
+		GSL_LOGE("power_check 0xb0 = %02x %02x %02x %02x\n",
+			 read_buf[3], read_buf[2], read_buf[1], read_buf[0]);
 		result = power_shutdowned;
+	}
 
 	return result;
 }

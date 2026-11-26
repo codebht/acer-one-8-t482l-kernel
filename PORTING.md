@@ -280,3 +280,8 @@ This chronological log covers both donor-tree attempts. Later entries supersede 
 ### Changes made
 - **Touch firmware (`drivers/input/touchscreen/mediatek/gslX680/mtk_gslX680.h`)**: Extracted the 4,818-record `GSLX680_FW[]` table (file offset `0xecfe78`) and 512-word `gsl_config_data_id[512]` array (file offset `0x18ba5c8`, `0x4b00780` = 1200x1920 config) for `G863_8_DFL_PG` from `build3/twrp-recovery-unpack/kernel` and replaced the donor tables in `mtk_gslX680.h`.
 - **Backlight (`drivers/misc/mediatek/leds/mt6765/mtk_leds.c`)**: In `mt_mt65xx_led_set_cust()` under `case MT65XX_LED_MODE_CUST_BLS_PWM:`, added `mtkfb_set_backlight_level(level);` when `cust->name` is `"lcd-backlight"` so sysfs brightness writes update DSI DCS `0x51` alongside `disp_bls_set_backlight()`.
+
+### Build #2 test & follow-up fixes
+- Flashed `twrp-acer-kernel-working.img` (`4.9.190+ #2`) and pulled `test-logs/twrp-working2-dmesg.log`, `test-logs/twrp-working2-recovery.log`, and `test-logs/pstore-working2/`.
+- **Touch (`gslX680`)**: With `G863_8_DFL_PG` installed, `0xF0`, `0x08`, `0xE4`, and `0xBC` stopped NACKing (only `0xE0 = 0x88` soft-reset NACKs with `-121`), but `power_check()` (`0xb0`) failed in `check_mem_data()` and re-ran `init_chip()`, leaving `/proc/interrupts` (`mtk-tpd`) at 0. Added `msleep(50)` in `startup_chip()` so the MCU has time to populate `0xb0 = 0x5a5a5a5a`, plus `GSL_LOGE` on `0xb0` mismatch.
+- **DISP_PWM (`drivers/misc/mediatek/video/mt6765/dispsys/ddp_pwm_mux.c`)**: Mapped `clk_req = 4` (used by `orig-dtbo.dts` `pwm_config = <0x04 0 0 0 0>`) to `CLK26M` in `disp_pwm_get_clkid()` instead of returning `-1`.

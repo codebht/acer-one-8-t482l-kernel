@@ -87,6 +87,7 @@ enum DDP_CLK_ID disp_pwm_get_clkid(unsigned int clk_req)
 		clkid = UNIVPLL2_D4;
 		break;
 	case 3:
+	case 4:
 		clkid = CLK26M; /* Bypass config:default 26M */
 		break;
 	default:
