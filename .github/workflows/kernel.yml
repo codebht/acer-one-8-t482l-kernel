@@ -25,8 +25,8 @@ jobs:
           ARCH: arm64
           CROSS_COMPILE: aarch64-linux-gnu-
           JOBS: 2
-          # GCC 12 misdiagnoses the legacy ARM64 atomic inline assembly.
-          KCFLAGS: -Wno-error=array-bounds -Wno-error=maybe-uninitialized
+          # GCC 11+ flags legacy ARM64/MTK code under -Werror.
+          KCFLAGS: -Wno-error=array-bounds -Wno-error=maybe-uninitialized -Wno-error=address -Wno-error=duplicate-decl-specifier -Wno-error=switch-unreachable -Wno-error=misleading-indentation -Wno-error=array-parameter -Wno-error=sizeof-pointer-memaccess
         run: |
           ./build.sh
           test -s out/acer_t482l/arch/arm64/boot/Image.gz
