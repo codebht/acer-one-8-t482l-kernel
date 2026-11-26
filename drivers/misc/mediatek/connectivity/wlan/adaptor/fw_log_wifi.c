@@ -219,7 +219,7 @@ struct fw_log_wifi_device {
 static struct fw_log_wifi_device *fw_log_wifi_dev;
 static int fw_log_wifi_major;
 
-static void fw_log_wifi_event_cb(void)
+static void __maybe_unused fw_log_wifi_event_cb(void)
 {
 	wake_up_interruptible(&wq);
 }

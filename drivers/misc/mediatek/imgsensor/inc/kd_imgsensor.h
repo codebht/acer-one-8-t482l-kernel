@@ -312,6 +312,7 @@
 #define GC5035MIPI_SENSOR_ID                    0x5035
 #define GC5035BMIPI_SENSOR_ID                   0x5036
 #define GC5035FMIPI_SENSOR_ID                   0x5035
+#define GC8034_SENSOR_ID                        0x8044
 /*SP*/
 #define SP0A19_YUV_SENSOR_ID                    0xA6
 #define SP2518_YUV_SENSOR_ID                    0x53
@@ -522,6 +523,7 @@
 #define SENSOR_DRVNAME_GC5035MIPI_RAW           "gc5035_mipi_raw"
 #define SENSOR_DRVNAME_GC5035BMIPI_RAW           "gc5035b_mipi_raw"
 #define SENSOR_DRVNAME_GC5035FMIPI_RAW          "gc5035f_mipi_raw"
+#define SENSOR_DRVNAME_GC8034_MIPI_RAW          "gc8034_mipi_raw"
 
 /*SP*/
 #define SENSOR_DRVNAME_SP0A19_YUV               "sp0a19_yuv"
