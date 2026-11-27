@@ -15,16 +15,16 @@ KERNEL_BOOTIMAGE_CMDLINE = bootopt=64S3,32N2,64N2 datapart=/dev/disk/by-partlabe
 
 # Slug for the device vendor. This is going to be used in the KERNELRELASE
 # and package names.
-DEVICE_VENDOR = lenovo
+DEVICE_VENDOR = acer
 
 # Slug for the device model. Like above.
-DEVICE_MODEL = akita
+DEVICE_MODEL = t482l
 
 # Slug for the device platform. If unsure, keep this commented.
 # DEVICE_PLATFORM = platform
 
 # Marketing-friendly full-name. This will be used inside package descriptions
-DEVICE_FULL_NAME = Lenovo Tab M8 HD
+DEVICE_FULL_NAME = Acer One 8 T482L
 
 # Whether to use configuration fragments to augment the kernel configuration.
 # If unsure, keep this to 0.
@@ -40,7 +40,7 @@ KERNEL_CONFIG_USE_DIFFCONFIG = 0
 # KERNEL_PRODUCT_DIFFCONFIG = my_diffconfig
 
 # Defconfig to use
-KERNEL_DEFCONFIG = akita_row_call_defconfig
+KERNEL_DEFCONFIG = acer_t482l_defconfig
 
 # Whether to include DTBs with the image. Use 0 (no) or 1.
 # GKI devices should set this to 0
@@ -58,7 +58,7 @@ KERNEL_IMAGE_DTB = arch/arm64/boot/dts/mediatek/mt6761.dtb
 # Path to the DTB overlay.
 # If you leave this undefined, an attempt to find it automatically
 # will be made.
-# KERNEL_IMAGE_DTB_OVERLAY = arch/arm64/boot/dts/mediatek/akita_row_call.dtb
+# KERNEL_IMAGE_DTB_OVERLAY = arch/arm64/boot/dts/mediatek/acer_t482l.dtb
 
 # Whether to include the DTB Overlay into the kernel image
 # Use 0 (no, default) or 1.
@@ -157,12 +157,12 @@ FLASH_USE_TELNET = 0
 # Device manufacturer. This must match the `ro.product.vendor.manufacturer`
 # Android property. If you don't want to specify this, leave it undefined,
 # FLASH_INFO_CPU will be checked instead.
-# FLASH_INFO_MANUFACTURER = LENOVO
+# FLASH_INFO_MANUFACTURER = ACER
 
 # Device model. This must match the `ro.product.vendor.model`
 # Android property. If you don't want to specify this, leave it undefined,
 # FLASH_INFO_CPU will be checked instead.
-# FLASH_INFO_MODEL = Lenovo TB-8505X
+# FLASH_INFO_MODEL = Acer One 8 T482L
 
 # Device CPU. This will be grepped against /proc/cpuinfo to check if
 # we're running on the specific device. Note this is a last-resort
@@ -171,7 +171,7 @@ FLASH_USE_TELNET = 0
 FLASH_INFO_CPU = MT8766B
 
 # Space-separated list of supported device ids as reported by fastboot
-FLASH_INFO_DEVICE_IDS = akita_row_call
+FLASH_INFO_DEVICE_IDS = acer_t482l
 
 ########################################################################
 # Kernel build settings

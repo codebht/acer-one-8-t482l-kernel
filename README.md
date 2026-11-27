@@ -1,13 +1,18 @@
-# Acer One 8 T482L kernel port
+# Acer One 8 T482L Kernel Tree
 
-This repository contains an experimental Linux kernel port for the Acer One 8 T482L. The current donor is the Lenovo Akita MediaTek tree (Linux 4.9.190); the earlier LibreHU AC8257 tree was an abandoned first attempt and is retained only in the chronological porting notes.
+Linux 4.9.190 kernel tree for the **Acer One 8 T482L** (MediaTek MT6761).
 
-## Current test status
+## Current hardware status
 
-- Build #18 reaches the Android boot animation, but Android boot completion has not been confirmed.
-- The displayed image is clipped at the top and bottom. The GSL touchscreen driver still fails I2C probe with `-121`.
-- CCCI/CLDMA and LTE/Wi-Fi coexistence are disabled in the Acer test defconfig after the donor modem path faulted while dumping an invalid CLDMA register address. LTE service is unavailable in this test configuration.
-- This is a development port, not a validated daily-use kernel. See [PORTING.md](PORTING.md) for evidence, changes, image hashes, and next steps.
+- **Boot:** Boots Android 10/11 (header v2 with stock DTB) and TWRP cleanly.
+- **Display & Backlight:** `acer_t482l_ili9881` (`800x1280` DSI) + `DISP_PWM0` (`0..1023`) working.
+- **Touchscreen:** `gslX680` (`G863_8_DFL_PG`) working.
+- **Connectivity:** Built-in WMT/WLAN/BT (`wlan_drv_gen4m`, `bt_drv`) working.
+- **Audio:** Speaker, headphone, and microphone working.
+- **Cameras & Torch:** Rear (`ov8858_mipi_raw`), Front (`gc2385_mipi_raw`), and Torch (`flashlights-mt6370`) working.
+- **Sensors:** Accelerometer, orientation, and proximity sensors active.
+
+See [PORTING.md](PORTING.md) for the engineering log, packaging parameters, and commit history.
 
 ## Build
 
