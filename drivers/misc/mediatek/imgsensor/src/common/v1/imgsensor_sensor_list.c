@@ -22,7 +22,34 @@
  * 2. This should be the same as
  *     mediatek\custom\common\hal\imgsensor\src\sensorlist.cpp
  */
+static UINT32 acer_dummy_sensor_init(struct SENSOR_FUNCTION_STRUCT **pfFunc)
+{
+	return 1;
+}
+
 struct IMGSENSOR_INIT_FUNC_LIST kdSensorList[MAX_NUM_OF_SUPPORT_SENSOR] = {
+	/* Match stock vendor libcameracustom.so SensorList indices 0..8 */
+	{0x0214, "imx214_mipi_raw", acer_dummy_sensor_init},
+	{0x0053, "ar0842_mipi_raw", acer_dummy_sensor_init},
+#if defined(GC8034_MIPI_RAW)
+	{GC8034_SENSOR_ID, SENSOR_DRVNAME_GC8034_MIPI_RAW, GC8034_MIPI_RAW_SensorInit},
+#else
+	{0x8044, "gc8034_mipi_raw", acer_dummy_sensor_init},
+#endif
+#if defined(OV8858_MIPI_RAW)
+	{OV8858_SENSOR_ID, SENSOR_DRVNAME_OV8858_MIPI_RAW, OV8858_MIPI_RAW_SensorInit},
+#else
+	{0x8858, "ov8858_mipi_raw", acer_dummy_sensor_init},
+#endif
+	{0x4800, "ar0543_mipi_raw", acer_dummy_sensor_init},
+	{0x5025, "gc5025_mipi_raw", acer_dummy_sensor_init},
+	{0x2365, "gc2365_mipi_raw", acer_dummy_sensor_init},
+	{0x2680, "ov2680_mipi_raw", acer_dummy_sensor_init},
+#if defined(GC2385_MIPI_RAW)
+	{GC2385_SENSOR_ID, SENSOR_DRVNAME_GC2385_MIPI_RAW, GC2385_MIPI_RAW_SensorInit},
+#else
+	{0x2385, "gc2385_mipi_raw", acer_dummy_sensor_init},
+#endif
 	/*IMX*/
 #if defined(IMX499_MIPI_RAW)
 		{IMX499_SENSOR_ID,
@@ -614,6 +641,11 @@ struct IMGSENSOR_INIT_FUNC_LIST kdSensorList[MAX_NUM_OF_SUPPORT_SENSOR] = {
 	{GC2375H_SENSOR_ID,
 	SENSOR_DRVNAME_GC2375H_MIPI_RAW,
 	GC2375H_MIPI_RAW_SensorInit},
+#endif
+#if defined(GC2385_MIPI_RAW)
+	{GC2385_SENSOR_ID,
+	SENSOR_DRVNAME_GC2385_MIPI_RAW,
+	GC2385_MIPI_RAW_SensorInit},
 #endif
 #if defined(GC2375_MIPI_RAW)
 	{GC2375MIPI_SENSOR_ID,

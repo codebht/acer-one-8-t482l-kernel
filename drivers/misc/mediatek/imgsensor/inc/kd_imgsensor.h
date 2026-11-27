@@ -295,6 +295,7 @@
 /*GC*/
 //
 #define GC2375H_SENSOR_ID                       0x2375
+#define GC2385_SENSOR_ID                        0x2385
 #define GC2375MIPI_SENSOR_ID                    0x2376
 #define GC02M1_SENSOR_ID                        0x02E0
 //
@@ -504,6 +505,7 @@
 /*GC*/
 //
 #define SENSOR_DRVNAME_GC2375H_MIPI_RAW         "gc2375h_mipi_raw"
+#define SENSOR_DRVNAME_GC2385_MIPI_RAW          "gc2385_mipi_raw"
 #define SENSOR_DRVNAME_GC2375_MIPI_RAW          "gc2375_mipi_raw"
 #define SENSOR_DRVNAME_GC02M1_MIPI_RAW          "gc02m1_mipi_raw" 
 //
