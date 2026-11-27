@@ -12,6 +12,14 @@ Linux 4.9.190 kernel tree for the **Acer One 8 T482L** (MediaTek MT6761).
 - **Cameras & Torch:** Rear (`ov8858_mipi_raw`), Front (`gc2385_mipi_raw`), and Torch (`flashlights-mt6370`) working.
 - **Sensors:** Accelerometer, orientation, and proximity sensors active.
 
+## Build
+
+```sh
+CROSS_COMPILE=/path/to/toolchain/bin/aarch64-linux-android- JOBS=10 ./build.sh
+```
+
+`build.sh` builds `Image.gz` (`out/acer_t482l/arch/arm64/boot/Image.gz`) and automatically packages `out/acer_t482l/boot.img` using the bundled stock ramdisk (`boot/acer_t482l/ramdisk.img`), stock DTB (`boot/acer_t482l/dtb`), and `tools/mkbootimg/mkbootimg.py`.
+
 See [PORTING.md](PORTING.md) for the engineering log, packaging parameters, and commit history.
 
 ## Build
