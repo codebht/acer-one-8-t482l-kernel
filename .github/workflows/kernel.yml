@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -67,3 +67,18 @@ jobs:
             out/acer_t482l/arch/arm64/boot/Image.gz
             out/acer_t482l/boot.img
           if-no-files-found: error
+
+      - name: Publish to Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: build-${{ github.run_number }}-${{ github.run_attempt }}
+        run: |
+          mkdir -p release
+          cp out/acer_t482l/arch/arm64/boot/Image.gz out/acer_t482l/boot.img release/
+          (cd release && sha256sum Image.gz boot.img > SHA256SUMS.txt)
+          gh release create "$TAG" \
+            release/boot.img release/Image.gz release/SHA256SUMS.txt \
+            --target "$GITHUB_SHA" \
+            --title "Acer T482L kernel $TAG" \
+            --notes "Automated build from commit $GITHUB_SHA. Not verified on a device. For Acer One 8 T482L only. Back up your boot partition before flashing." \
+            --prerelease
